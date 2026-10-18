@@ -15,8 +15,8 @@
                 const [x, y] = enum_status[status_offset].split(':');
                 if (x === position) {
                     last_number = cursor.read();
-                    cusor.right();
-                    postion += 1;
+                    cursor.right();
+                    position += 1;
                 }
                 else if (y === position) {
                     const number = cursor.read();
@@ -24,19 +24,22 @@
                         replace_task = x;
                         cursor.put(last_number);
                         last_number = number;
-                        postion -= 1;
+                        position -= 1;
+                    } else {
+                        statsus_offset += 1;
                     }
                 }
                 else {
                     cursor.right();
-                    postion += 1;
+                    position += 1;
                 }
             } else {
                 if (replace_task < position) {
                     cursor.left();
-                    postion -= 1;
+                    position -= 1;
                 } else {
                     cursor.put(last_number);
+                    status_offset += 1;
                 }
             }
         }
