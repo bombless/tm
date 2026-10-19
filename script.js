@@ -17,7 +17,6 @@ function defineScope(variables) {
                 const m = methods[k];
                 const expose = m.expose;
                 if (expose) ret[k] = () => m.method.call(state);
-
             }
             return ret;
         }
@@ -27,82 +26,133 @@ function defineScope(variables) {
 const tape = defineScope({tape: [2, 5, 1], tape_position: 0});
 tape.defineMethod('put', function(n) { this.tape[this.tape_position] = n; });
 tape.defineMethod('read', function() { return this.tape[this.tape_position]; });
-tape.defineMethod('left', function() { this.tape_position--; });
-tape.defineMethod('right', function() { this.tape_position++; });
+tape.defineMethod('left', function() { this.tape_position--; }, true);
+tape.defineMethod('right', function() { this.tape_position++; }, true);
 
-
-const policy = defineScope({
-    enum_status: ['0:1', '0:2', '1:2'],
-    replace_task: null,
-    status_offset: 0,
-    last_number: null,
-    position: 0,
-    error_message: null
+// 定义读写头（状态控制器）
+const tapeHead = defineScope({
+    state: 'q0',
+    memory: null
 });
 
-const cursor = new Proxy({}, {
-    get: (_, name) => (...args) => tape.apply(name, args)
-});
+// 暴露 next 按钮：严格按照状态转移表执行单步转移
+tapeHead.defineMethod('next', function() {
+    if (this.state === 'halt') return;
 
-function next() {
-    if (this.position < 0 || this.position > 2) {
-        this.error_message = '位置超出允许范围（0 到 2），已停止执行。';
-        return;
-    }
-    if (this.status_offset < 0 || this.status_offset >= this.enum_status.length) {
-        this.error_message = '状态偏移量超出允许范围，已停止执行。';
-        return;
-    }
-    this.error_message = null;
+    const pos = tape.getVariables().tape_position;
+    const val = tape.apply('read');
 
-    if (this.replace_task === null) {
-        const [x, y] = this.enum_status[this.status_offset].split(':');
-        if (x == this.position) {
-            this.last_number = cursor.read();
-            cursor.right();
-            this.position += 1;
-        }
-        else if (y == this.position) {
-            const number = cursor.read();
-            if (number < this.last_number) {
-                this.replace_task = x;
-                cursor.put(this.last_number);
-                this.last_number = number;
-                cursor.left();
-                this.position -= 1;
-            } else {
-                this.status_offset += 1;
+    switch (this.state) {
+        case 'q0':
+            if (pos === 0) {
+                this.memory = val;
+                tape.apply('right');
+                this.state = 'q0';
+            } else if (pos === 1) {
+                if (val < this.memory) {
+                    const tmp = val;
+                    tape.apply('put', [this.memory]);
+                    this.memory = tmp;
+                    tape.apply('left');
+                    this.state = 'q3';
+                } else {
+                    this.state = 'q1';
+                }
             }
-        }
-        else {
-            cursor.right();
-            this.position += 1;
-        }
-    } else {
-        if (this.replace_task < this.position) {
-            cursor.left();
-            this.position -= 1;
-        } else {
-            cursor.put(this.last_number);
-            this.status_offset += 1;
-            cursor.right();
-            this.position += 1;
-            this.replace_task = null;
-        }
-    }
-}
+            break;
 
-policy.defineMethod('next', next, true);
+        case 'q1':
+            if (pos === 0) {
+                this.memory = val;
+                tape.apply('right');
+                this.state = 'q1';
+            } else if (pos === 1) {
+                tape.apply('right');
+                this.state = 'q1';
+            } else if (pos === 2) {
+                if (val < this.memory) {
+                    const tmp = val;
+                    tape.apply('put', [this.memory]);
+                    this.memory = tmp;
+                    tape.apply('left');
+                    this.state = 'q4';
+                } else {
+                    this.state = 'q2';
+                }
+            }
+            break;
+
+        case 'q2':
+            if (pos === 1) {
+                this.memory = val;
+                tape.apply('right');
+                this.state = 'q2';
+            } else if (pos === 2) {
+                if (val < this.memory) {
+                    const tmp = val;
+                    tape.apply('put', [this.memory]);
+                    this.memory = tmp;
+                    tape.apply('left');
+                    this.state = 'q5';
+                } else {
+                    this.state = 'halt';
+                }
+            }
+            break;
+
+        case 'q3':
+            if (pos > 0) {
+                tape.apply('left');
+                this.state = 'q3';
+            } else {
+                tape.apply('put', [this.memory]);
+                tape.apply('right');
+                this.state = 'q1';
+            }
+            break;
+
+        case 'q4':
+            if (pos > 0) {
+                tape.apply('left');
+                this.state = 'q4';
+            } else {
+                tape.apply('put', [this.memory]);
+                tape.apply('right');
+                this.state = 'q2';
+            }
+            break;
+
+        case 'q5':
+            if (pos > 1) {
+                tape.apply('left');
+                this.state = 'q5';
+            } else {
+                tape.apply('put', [this.memory]);
+                tape.apply('right');
+                this.state = 'halt';
+            }
+            break;
+    }
+}, true);
+
+// 暴露 reset 按钮：重置纸带和状态机
+tapeHead.defineMethod('reset', function() {
+    const t = tape.getVariables();
+    t.tape = [2, 5, 1];
+    t.tape_position = 0;
+    this.state = 'q0';
+    this.memory = null;
+}, true);
 
 const app = Vue.createApp({
     data() {
         return {
             tapeVariables: tape.getVariables(),
-            tapeHeadVariables: policy.getVariables(),
             tapeFunctions: tape.functions(),
-            tapeHeadFunctions: policy.functions(),
+            headVariables: tapeHead.getVariables(),
+            headFunctions: tapeHead.functions(),
         }
     }
 });
-app.config.compilerOptions.isCustomElement = (tag) => ['actions', 'tape', 'tape-head'].includes(tag)
+app.config.compilerOptions.isCustomElement = (tag) => ['actions', 'tape', 'tape-head'].includes(tag);
 app.mount('main');

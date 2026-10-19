@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <main>
 <tape>
     <p>tape</p>
@@ -7,23 +6,160 @@
             <span v-text="k"></span>
         </button>
     </actions>
-    <div v-for="(v, k) in tapeVariables">
+    <div class="var-item" v-for="(v, k) in tapeVariables">
         <div v-text="k"></div>
         <div v-text="v"></div>
     </div>
 </tape>
+
 <tape-head>
-    <p>tape head</p>
+    <div class="table-header">
+        <p>tape-head &amp; 状态转移表 &delta;(q, a) &rarr; (q&prime;, b, D)</p>
+        <span class="formal-spec">M = (Q, &Sigma;, &Gamma;, &delta;, q<sub>0</sub>, &#9251;, F)</span>
+    </div>
+
+    <!-- 恢复 next / reset 操作按钮 -->
     <actions>
-        <button v-for="(v, k) in tapeHeadFunctions" @click="v()">
+        <button v-for="(v, k) in headFunctions" @click="v()">
             <span v-text="k"></span>
         </button>
     </actions>
-    <p class="error-message" role="alert" v-if="tapeHeadVariables.error_message" v-text="tapeHeadVariables.error_message"></p>
-    <div v-for="(v, k) in tapeHeadVariables">
+
+    <!-- 显示当前状态与寄存值 -->
+    <div class="var-item" v-for="(v, k) in headVariables">
         <div v-text="k"></div>
-        <div v-text="JSON.stringify(v)"></div>
+        <div v-text="v === null ? '∅' : v"></div>
     </div>
+
+    <div class="transition-table-wrap">
+        <table class="transition-table">
+            <thead>
+                <tr>
+                    <th>当前状态 q</th>
+                    <th>读入符号 a</th>
+                    <th>写入符号 b</th>
+                    <th>方向 D</th>
+                    <th>下一状态 q&prime;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- q0：比较第 0 位与第 1 位 -->
+                <tr :class="{ 'is-active': headVariables.state === 'q0' && tapeVariables.tape_position === 0 }">
+                    <td rowspan="3"><code>q<sub>0</sub></code></td>
+                    <td><code>a &in; &Sigma;</code> <span class="cond">(pos=0)</span></td>
+                    <td><code>a</code> <span class="cond">(m&larr;a)</span></td>
+                    <td><span class="dir dir-r">R</span></td>
+                    <td><code>q<sub>0</sub></code></td>
+                </tr>
+                <tr :class="{ 'is-active': headVariables.state === 'q0' && tapeVariables.tape_position === 1 && tapeVariables.tape[1] < headVariables.memory }">
+                    <td><code>a &lt; m</code> <span class="cond">(pos=1)</span></td>
+                    <td><code>m</code> <span class="cond">(m&larr;a)</span></td>
+                    <td><span class="dir dir-l">L</span></td>
+                    <td><code>q<sub>3</sub></code></td>
+                </tr>
+                <tr :class="{ 'is-active': headVariables.state === 'q0' && tapeVariables.tape_position === 1 && tapeVariables.tape[1] >= headVariables.memory }">
+                    <td><code>a &ge; m</code> <span class="cond">(pos=1)</span></td>
+                    <td><code>a</code></td>
+                    <td><span class="dir dir-s">S</span></td>
+                    <td><code>q<sub>1</sub></code></td>
+                </tr>
+
+                <!-- q1：比较第 0 位与第 2 位 -->
+                <tr :class="{ 'is-active': headVariables.state === 'q1' && tapeVariables.tape_position === 0 }">
+                    <td rowspan="4"><code>q<sub>1</sub></code></td>
+                    <td><code>a &in; &Sigma;</code> <span class="cond">(pos=0)</span></td>
+                    <td><code>a</code> <span class="cond">(m&larr;a)</span></td>
+                    <td><span class="dir dir-r">R</span></td>
+                    <td><code>q<sub>1</sub></code></td>
+                </tr>
+                <tr :class="{ 'is-active': headVariables.state === 'q1' && tapeVariables.tape_position === 1 }">
+                    <td><code>a &in; &Sigma;</code> <span class="cond">(pos=1)</span></td>
+                    <td><code>a</code></td>
+                    <td><span class="dir dir-r">R</span></td>
+                    <td><code>q<sub>1</sub></code></td>
+                </tr>
+                <tr :class="{ 'is-active': headVariables.state === 'q1' && tapeVariables.tape_position === 2 && tapeVariables.tape[2] < headVariables.memory }">
+                    <td><code>a &lt; m</code> <span class="cond">(pos=2)</span></td>
+                    <td><code>m</code> <span class="cond">(m&larr;a)</span></td>
+                    <td><span class="dir dir-l">L</span></td>
+                    <td><code>q<sub>4</sub></code></td>
+                </tr>
+                <tr :class="{ 'is-active': headVariables.state === 'q1' && tapeVariables.tape_position === 2 && tapeVariables.tape[2] >= headVariables.memory }">
+                    <td><code>a &ge; m</code> <span class="cond">(pos=2)</span></td>
+                    <td><code>a</code></td>
+                    <td><span class="dir dir-s">S</span></td>
+                    <td><code>q<sub>2</sub></code></td>
+                </tr>
+
+                <!-- q2：比较第 1 位与第 2 位 -->
+                <tr :class="{ 'is-active': headVariables.state === 'q2' && tapeVariables.tape_position === 1 }">
+                    <td rowspan="3"><code>q<sub>2</sub></code></td>
+                    <td><code>a &in; &Sigma;</code> <span class="cond">(pos=1)</span></td>
+                    <td><code>a</code> <span class="cond">(m&larr;a)</span></td>
+                    <td><span class="dir dir-r">R</span></td>
+                    <td><code>q<sub>2</sub></code></td>
+                </tr>
+                <tr :class="{ 'is-active': headVariables.state === 'q2' && tapeVariables.tape_position === 2 && tapeVariables.tape[2] < headVariables.memory }">
+                    <td><code>a &lt; m</code> <span class="cond">(pos=2)</span></td>
+                    <td><code>m</code> <span class="cond">(m&larr;a)</span></td>
+                    <td><span class="dir dir-l">L</span></td>
+                    <td><code>q<sub>5</sub></code></td>
+                </tr>
+                <tr :class="{ 'is-active': headVariables.state === 'q2' && tapeVariables.tape_position === 2 && tapeVariables.tape[2] >= headVariables.memory }">
+                    <td><code>a &ge; m</code> <span class="cond">(pos=2)</span></td>
+                    <td><code>a</code></td>
+                    <td><span class="dir dir-s">S</span></td>
+                    <td><code>q<sub>halt</sub></code></td>
+                </tr>
+
+                <!-- q3 / q4 / q5：回填状态 -->
+                <tr :class="{ 'is-active': headVariables.state === 'q3' && tapeVariables.tape_position > 0 }">
+                    <td rowspan="2"><code>q<sub>3</sub></code></td>
+                    <td><code>a &in; &Sigma;</code> <span class="cond">(pos&gt;0)</span></td>
+                    <td><code>a</code></td>
+                    <td><span class="dir dir-l">L</span></td>
+                    <td><code>q<sub>3</sub></code></td>
+                </tr>
+                <tr :class="{ 'is-active': headVariables.state === 'q3' && tapeVariables.tape_position === 0 }">
+                    <td><code>a &in; &Sigma;</code> <span class="cond">(pos=0)</span></td>
+                    <td><code>m</code></td>
+                    <td><span class="dir dir-r">R</span></td>
+                    <td><code>q<sub>1</sub></code></td>
+                </tr>
+
+                <tr :class="{ 'is-active': headVariables.state === 'q4' && tapeVariables.tape_position > 0 }">
+                    <td rowspan="2"><code>q<sub>4</sub></code></td>
+                    <td><code>a &in; &Sigma;</code> <span class="cond">(pos&gt;0)</span></td>
+                    <td><code>a</code></td>
+                    <td><span class="dir dir-l">L</span></td>
+                    <td><code>q<sub>4</sub></code></td>
+                </tr>
+                <tr :class="{ 'is-active': headVariables.state === 'q4' && tapeVariables.tape_position === 0 }">
+                    <td><code>a &in; &Sigma;</code> <span class="cond">(pos=0)</span></td>
+                    <td><code>m</code></td>
+                    <td><span class="dir dir-r">R</span></td>
+                    <td><code>q<sub>2</sub></code></td>
+                </tr>
+
+                <tr :class="{ 'is-active': headVariables.state === 'q5' && tapeVariables.tape_position > 1 }">
+                    <td rowspan="2"><code>q<sub>5</sub></code></td>
+                    <td><code>a &in; &Sigma;</code> <span class="cond">(pos&gt;1)</span></td>
+                    <td><code>a</code></td>
+                    <td><span class="dir dir-l">L</span></td>
+                    <td><code>q<sub>5</sub></code></td>
+                </tr>
+                <tr :class="{ 'is-active': headVariables.state === 'q5' && tapeVariables.tape_position === 1 }">
+                    <td><code>a &in; &Sigma;</code> <span class="cond">(pos=1)</span></td>
+                    <td><code>m</code></td>
+                    <td><span class="dir dir-r">R</span></td>
+                    <td><code>q<sub>halt</sub></code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <p class="table-note">
+        <code>a</code> = 当前读入符号；<code>m</code> = 状态寄存器 memory；<code>R / L / S</code> = 右移 / 左移 / 保持；绿色高亮行为下一步即将触发的转移规则。
+    </p>
 </tape-head>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
