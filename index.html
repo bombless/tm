@@ -65,8 +65,22 @@
 
     }
     Vue.createApp({
+        methods: {
+        },
         data() {
             return {
+                state: {
+                    position: 0,
+                    last_number: null,
+                    enum_status: ['0:1', '0:2', '1:2'],
+                    status_offset: 0,
+                    replace_task: null,
+                    
+                },
+                tape: {
+                    content: [2, 5, 1],
+                    offset: 0
+                }
             }
         }
     }).mount('main')
