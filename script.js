@@ -1,21 +1,22 @@
 function defineScope(variables) {
+    const state = Vue.reactive(variables);
     const methods = {};
     return {
         defineMethod(name, method, expose = false) {
             methods[name] = {method, expose};
         },
         getVariables() {
-            return Object.assign({}, variables);
+            return state;
         },
         apply(method, args) {
-            return methods[method].method.apply(variables, args);
+            return methods[method].method.apply(state, args);
         },
         functions() {
             const ret = {};
             for (const k in methods) {
                 const m = methods[k];
                 const expose = m.expose;
-                if (expose) ret[k] = () => m.method.call(variables);
+                if (expose) ret[k] = () => m.method.call(state);
 
             }
             return ret;
@@ -89,5 +90,5 @@ const app = Vue.createApp({
         }
     }
 });
-app.config.compilerOptions.isCustomElement = (tag) => ['tape', 'tape-head'].includes(tag)
+app.config.compilerOptions.isCustomElement = (tag) => ['actions', 'tape', 'tape-head'].includes(tag)
 app.mount('main');
