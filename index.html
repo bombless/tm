@@ -11,7 +11,7 @@
     <p>tape head</p>
     <div v-for="(v, k) in tapeHeadVariables">
         <div v-text="k"></div>
-        <div v-text="v"></div>
+        <div v-text="JSON.stringify(v)"></div>
     </div>
 </tape-head>
 </main>
