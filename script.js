@@ -78,8 +78,8 @@ policy.defineMethod('next', next, true);
 const app = Vue.createApp({
     data() {
         return {
-            'tape-variables': tape.getVariables(),
-            'tape-head-variables': policy.getVariables()
+            tapeVariables: tape.getVariables(),
+            tapeHeadVariables: policy.getVariables()
         }
     }
 });
