@@ -38,16 +38,19 @@ const policy = defineScope({
     position: 0
 });
 
+const cursor = new Proxy({}, {
+    get: (_, name) => (...args) => tape.apply(name, args)
+});
 
-function next(cursor) {
+function next() {
     if (this.replace_task === null) {
         const [x, y] = this.enum_status[this.status_offset].split(':');
-        if (x === this.position) {
+        if (x == this.position) {
             this.last_number = cursor.read();
             cursor.right();
             this.position += 1;
         }
-        else if (y === this.position) {
+        else if (y == this.position) {
             const number = cursor.read();
             if (number < this.last_number) {
                 this.replace_task = x;
