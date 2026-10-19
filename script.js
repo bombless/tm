@@ -79,7 +79,9 @@ const app = Vue.createApp({
     data() {
         return {
             tapeVariables: tape.getVariables(),
-            tapeHeadVariables: policy.getVariables()
+            tapeHeadVariables: policy.getVariables(),
+            tapeFunctions: tape.functions(),
+            tapeHeadFunctions: policy.functions(),
         }
     }
 });

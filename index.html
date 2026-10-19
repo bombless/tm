@@ -2,6 +2,11 @@
 <main>
 <tape>
     <p>tape</p>
+    <actions>
+        <button v-for="(v, k) in tapeFunctions" @click="v()">
+            <span v-text="k"></span>
+        </button>
+    </actions>
     <div v-for="(v, k) in tapeVariables">
         <div v-text="k"></div>
         <div v-text="v"></div>
@@ -9,6 +14,11 @@
 </tape>
 <tape-head>
     <p>tape head</p>
+    <actions>
+        <button v-for="(v, k) in tapeHeadFunctions" @click="v()">
+            <span v-text="k"></span>
+        </button>
+    </actions>
     <div v-for="(v, k) in tapeHeadVariables">
         <div v-text="k"></div>
         <div v-text="JSON.stringify(v)"></div>
