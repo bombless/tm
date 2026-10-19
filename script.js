@@ -40,35 +40,35 @@ const policy = defineScope({
 
 
 function next(cursor) {
-    if (replace_task === null) {
-        const [x, y] = enum_status[status_offset].split(':');
-        if (x === position) {
-            last_number = cursor.read();
+    if (this.replace_task === null) {
+        const [x, y] = this.enum_status[this.status_offset].split(':');
+        if (x === this.position) {
+            this.last_number = cursor.read();
             cursor.right();
-            position += 1;
+            this.position += 1;
         }
-        else if (y === position) {
+        else if (y === this.position) {
             const number = cursor.read();
-            if (number < last_number) {
-                replace_task = x;
-                cursor.put(last_number);
-                last_number = number;
-                position -= 1;
+            if (number < this.last_number) {
+                this.replace_task = x;
+                cursor.put(this.last_number);
+                this.last_number = number;
+                this.position -= 1;
             } else {
-                statsus_offset += 1;
+                this.status_offset += 1;
             }
         }
         else {
             cursor.right();
-            position += 1;
+            this.position += 1;
         }
     } else {
-        if (replace_task < position) {
+        if (this.replace_task < this.position) {
             cursor.left();
-            position -= 1;
+            this.position -= 1;
         } else {
-            cursor.put(last_number);
-            status_offset += 1;
+            cursor.put(this.last_number);
+            this.status_offset += 1;
         }
     }
 }

@@ -65,6 +65,56 @@ tape-head > p {
   padding-left: 0.75rem;
 }
 
+actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+button {
+  appearance: none;
+  border: 1px solid rgba(124, 109, 240, 0.45);
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(135deg, rgba(124, 109, 240, 0.28), rgba(124, 109, 240, 0.12));
+  color: #d8d3ff;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(157, 140, 255, 0.8);
+  background: linear-gradient(135deg, rgba(124, 109, 240, 0.5), rgba(124, 109, 240, 0.25));
+  color: #ffffff;
+  box-shadow: 0 5px 16px rgba(124, 109, 240, 0.2);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:focus-visible {
+  outline: 2px solid #c9c4ff;
+  outline-offset: 3px;
+}
+
+tape-head button {
+  border-color: rgba(61, 214, 184, 0.4);
+  background: linear-gradient(135deg, rgba(61, 214, 184, 0.24), rgba(61, 214, 184, 0.1));
+  color: #b8fff0;
+}
+
+tape-head button:hover {
+  border-color: rgba(109, 224, 200, 0.8);
+  background: linear-gradient(135deg, rgba(61, 214, 184, 0.42), rgba(61, 214, 184, 0.2));
+}
+
 /* 变量条目容器 — 圆角矩形包裹每个变量 */
 tape > div,
 tape-head > div {
