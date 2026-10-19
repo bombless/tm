@@ -45,9 +45,12 @@ const cursor = new Proxy({}, {
 });
 
 function next() {
-    console.log('next', this.position)
     if (this.position < 0 || this.position > 2) {
         this.error_message = '位置超出允许范围（0 到 2），已停止执行。';
+        return;
+    }
+    if (this.status_offset < 0 || this.status_offset >= this.enum_status.length) {
+        this.error_message = '状态偏移量超出允许范围，已停止执行。';
         return;
     }
     this.error_message = null;
