@@ -1,88 +1,20 @@
 <!DOCTYPE html>
 <main>
-<div v-text="x"></div>
+<tape>
+    <p>tape</p>
+    <div v-for="(v, k) in tape-variables">
+        <div v-text="k"></div>
+        <div v-text="v"></div>
+    </div>
+</tape>
+<tape-head>
+    <p>tape head</p>
+    <div v-for="(v, k) in tape-head-variables">
+        <div v-text="k"></div>
+        <div v-text="v"></div>
+    </div>
+</tape-head>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-<script>
-    function resolve() {
-        const enum_status = ['0:1', '0:2', '1:2']
-        let replace_task = null;
-        let status_offset = 0;
-        let last_number = null;
-        let position = 0;
-        function next(cursor) {
-            if (replace_task === null) {
-                const [x, y] = enum_status[status_offset].split(':');
-                if (x === position) {
-                    last_number = cursor.read();
-                    cursor.right();
-                    position += 1;
-                }
-                else if (y === position) {
-                    const number = cursor.read();
-                    if (number < last_number) {
-                        replace_task = x;
-                        cursor.put(last_number);
-                        last_number = number;
-                        position -= 1;
-                    } else {
-                        statsus_offset += 1;
-                    }
-                }
-                else {
-                    cursor.right();
-                    position += 1;
-                }
-            } else {
-                if (replace_task < position) {
-                    cursor.left();
-                    position -= 1;
-                } else {
-                    cursor.put(last_number);
-                    status_offset += 1;
-                }
-            }
-        }
-
-        const tape = [2, 5, 1];
-        let tape_offset = 0;
-        while(status_offset < 3) {
-            next({
-                put(n) {
-                    tape[tape_offset] = n;
-                },
-                read() {
-                    return tape[tape_offset];
-                },
-                left() {
-                    tape_offset -= 1;
-                },
-                right() {
-                    tape_offset += 1;
-                }
-            })
-        }
-
-    }
-    Vue.createApp({
-        methods: {
-        },
-        data() {
-            return {
-                state: {
-                    position: 0,
-                    last_number: null,
-                    enum_status: ['0:1', '0:2', '1:2'],
-                    status_offset: 0,
-                    replace_task: null,
-                    
-                },
-                tape: {
-                    content: [2, 5, 1],
-                    offset: 0
-                }
-            }
-        }
-    }).mount('main')
-
-</script>
+<script src="script.js"></script>
+<link rel="stylesheet" href="style.css">

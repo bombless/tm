@@ -1,0 +1,197 @@
+/* style.css */
+
+/* 全局基础样式 */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Consolas', monospace;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  color: #e0e0e0;
+}
+
+/* 主容器：两列布局 */
+main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* tape 与 tape-head 共享的卡片样式 */
+tape,
+tape-head {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 1.75rem;
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+tape:hover,
+tape-head:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* 标题段落 */
+tape > p,
+tape-head > p {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #9d8cff;
+  margin-bottom: 1.25rem;
+  padding-left: 0.25rem;
+  border-left: 3px solid #7c6df0;
+  padding-left: 0.75rem;
+}
+
+/* 变量条目容器 — 圆角矩形包裹每个变量 */
+tape > div,
+tape-head > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  padding: 0.7rem 1.1rem;
+  margin-bottom: 0.6rem;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+tape > div:hover,
+tape-head > div:hover {
+  background: rgba(124, 109, 240, 0.12);
+  border-color: rgba(124, 109, 240, 0.45);
+  transform: translateX(4px);
+}
+
+/* 变量名（key） */
+tape > div > div:first-child,
+tape-head > div > div:first-child {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #8b8fa3;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 45%;
+}
+
+/* 变量值（value） */
+tape > div > div:last-child,
+tape-head > div > div:last-child {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #c9c4ff;
+  background: rgba(124, 109, 240, 0.18);
+  border: 1px solid rgba(124, 109, 240, 0.3);
+  border-radius: 8px;
+  padding: 0.2rem 0.7rem;
+  text-align: center;
+  min-width: 2.5rem;
+  word-break: break-all;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+tape > div:hover > div:last-child,
+tape-head > div:hover > div:last-child {
+  background: rgba(124, 109, 240, 0.35);
+  color: #ffffff;
+}
+
+/* 如果 tape 变量很多，可滚动 */
+tape,
+tape-head {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* 自定义滚动条 */
+tape::-webkit-scrollbar,
+tape-head::-webkit-scrollbar {
+  width: 6px;
+}
+
+tape::-webkit-scrollbar-track,
+tape-head::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+tape::-webkit-scrollbar-thumb,
+tape-head::-webkit-scrollbar-thumb {
+  background: rgba(124, 109, 240, 0.35);
+  border-radius: 3px;
+}
+
+tape::-webkit-scrollbar-thumb:hover,
+tape-head::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 109, 240, 0.6);
+}
+
+/* 响应式：窄屏时上下堆叠 */
+@media (max-width: 720px) {
+  main {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  tape,
+  tape-head {
+    max-height: none;
+    padding: 1.25rem;
+  }
+}
+
+/* 为 tape-head 标题添加一点不同的强调色（可选） */
+tape-head > p {
+  color: #6de0c8;
+  border-left-color: #3dd6b8;
+}
+
+tape-head > div:hover {
+  background: rgba(61, 214, 184, 0.1);
+  border-color: rgba(61, 214, 184, 0.4);
+}
+
+tape-head > div > div:last-child {
+  color: #b8fff0;
+  background: rgba(61, 214, 184, 0.15);
+  border-color: rgba(61, 214, 184, 0.3);
+}
+
+tape-head > div:hover > div:last-child {
+  background: rgba(61, 214, 184, 0.3);
+  color: #ffffff;
+}
+
+tape-head::-webkit-scrollbar-thumb {
+  background: rgba(61, 214, 184, 0.35);
+}
+
+tape-head::-webkit-scrollbar-thumb:hover {
+  background: rgba(61, 214, 184, 0.6);
+}
