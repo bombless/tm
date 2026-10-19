@@ -5,13 +5,20 @@ function defineScope(variables) {
             methods[name] = {method, expose};
         },
         getVariables() {
-            return variables;
+            return Object.assign({}, variables);
         },
         apply(method, args) {
             return methods[method].method.apply(variables, args);
         },
         functions() {
-            return Object.values(methods).filter(m => m.expose).map(m => m.method);
+            const ret = {};
+            for (const k in methods) {
+                const m = methods[k];
+                const expose = m.expose;
+                if (expose) ret[k] = m.method;
+
+            }
+            return ret;
         }
     };
 }
