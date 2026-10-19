@@ -68,3 +68,13 @@ function next(cursor) {
 
 policy.defineMethod('next', next, true);
 
+const app = Vue.createApp({
+    data() {
+        return {
+            'tape-variables': tape.getVariables(),
+            'tape-head-variables': policy.getVariables()
+        }
+    }
+});
+app.config.compilerOptions.isCustomElement = (tag) => ['tape', 'tape-head'].includes(tag)
+app.mount('main');
