@@ -65,6 +65,7 @@ function next() {
                 this.replace_task = x;
                 cursor.put(this.last_number);
                 this.last_number = number;
+                cursor.left();
                 this.position -= 1;
             } else {
                 this.status_offset += 1;
@@ -81,6 +82,9 @@ function next() {
         } else {
             cursor.put(this.last_number);
             this.status_offset += 1;
+            cursor.right();
+            this.position += 1;
+            this.replace_task = null;
         }
     }
 }
