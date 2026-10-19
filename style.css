@@ -222,6 +222,20 @@ tape-head > p {
   border-left-color: #3dd6b8;
 }
 
+.error-message {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 110, 110, 0.45);
+  border-left: 3px solid #ff6e6e;
+  border-radius: 8px;
+  background: rgba(255, 110, 110, 0.1);
+  color: #ffb3b3;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
 tape-head > div:hover {
   background: rgba(61, 214, 184, 0.1);
   border-color: rgba(61, 214, 184, 0.4);

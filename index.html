@@ -19,6 +19,7 @@
             <span v-text="k"></span>
         </button>
     </actions>
+    <p class="error-message" role="alert" v-if="tapeHeadVariables.error_message" v-text="tapeHeadVariables.error_message"></p>
     <div v-for="(v, k) in tapeHeadVariables">
         <div v-text="k"></div>
         <div v-text="JSON.stringify(v)"></div>

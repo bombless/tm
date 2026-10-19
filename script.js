@@ -36,7 +36,8 @@ const policy = defineScope({
     replace_task: null,
     status_offset: 0,
     last_number: null,
-    position: 0
+    position: 0,
+    error_message: null
 });
 
 const cursor = new Proxy({}, {
@@ -45,6 +46,12 @@ const cursor = new Proxy({}, {
 
 function next() {
     console.log('next', this.position)
+    if (this.position < 0 || this.position > 2) {
+        this.error_message = '位置超出允许范围（0 到 2），已停止执行。';
+        return;
+    }
+    this.error_message = null;
+
     if (this.replace_task === null) {
         const [x, y] = this.enum_status[this.status_offset].split(':');
         if (x == this.position) {
