@@ -102,6 +102,83 @@ const app = Vue.createApp({
             tapeFunctions: tape.functions(),
             tapeHeadFunctions: policy.functions(),
         }
+    },
+    computed: {
+        transitionRows() {
+            const {enum_status, status_offset, position, replace_task, last_number} = this.tapeHeadVariables;
+            const currentSymbol = this.tapeVariables.tape[this.tapeVariables.tape_position];
+            const rows = [];
+
+            enum_status.forEach((status, index) => {
+                const [left, right] = status.split(':').map(Number);
+                const state = `q${index}`;
+                const isCurrentState = index === status_offset;
+                const isReplacing = isCurrentState && replace_task !== null;
+                const comparisonSucceeded = currentSymbol < last_number;
+
+                rows.push({
+                    state,
+                    condition: `位置 = ${left}`,
+                    write: '不变',
+                    move: 'R',
+                    next: `记录符号，${state}`,
+                    active: isCurrentState && replace_task === null && position === left,
+                });
+                rows.push({
+                    state,
+                    condition: `位置 = ${right} 且 读入 < 已记录值`,
+                    write: '已记录值',
+                    move: 'L',
+                    next: `回填到位置 ${left}`,
+                    active: isCurrentState && replace_task === null && position === right && comparisonSucceeded,
+                });
+                rows.push({
+                    state,
+                    condition: `位置 = ${right} 且 读入 ≥ 已记录值`,
+                    write: '不变',
+                    move: 'S',
+                    next: index + 1 < enum_status.length ? `q${index + 1}` : '结束',
+                    active: isCurrentState && replace_task === null && position === right && !comparisonSucceeded,
+                });
+                rows.push({
+                    state: `回填 q${index}`,
+                    condition: `目标位置 ${left} < 当前位置`,
+                    write: '不变',
+                    move: 'L',
+                    next: `回填 q${index}`,
+                    active: isReplacing && Number(replace_task) === left && left < position,
+                });
+                rows.push({
+                    state: `回填 q${index}`,
+                    condition: `当前位置 ≤ 目标位置 ${left}`,
+                    write: '已记录值',
+                    move: 'R',
+                    next: index + 1 < enum_status.length ? `q${index + 1}` : '结束',
+                    active: isReplacing && Number(replace_task) === left && left >= position,
+                });
+                rows.push({
+                    state,
+                    condition: `位置 ≠ ${left} 且 位置 ≠ ${right}`,
+                    write: '不变',
+                    move: 'R',
+                    next: state,
+                    active: isCurrentState && replace_task === null && position !== left && position !== right,
+                });
+            });
+
+            return rows;
+        }
+    },
+    methods: {
+        runTapeHeadAction(action) {
+            action();
+            this.$nextTick(() => {
+                const activeRow = document.querySelector('.transition-table tr.is-active');
+                if (activeRow) {
+                    activeRow.scrollIntoView({block: 'nearest', inline: 'nearest', behavior: 'smooth'});
+                }
+            });
+        }
     }
 });
 app.config.compilerOptions.isCustomElement = (tag) => ['actions', 'tape', 'tape-head'].includes(tag)

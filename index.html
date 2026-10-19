@@ -13,16 +13,34 @@
     </div>
 </tape>
 <tape-head>
-    <p>tape head</p>
+    <p>状态转移表</p>
     <actions>
-        <button v-for="(v, k) in tapeHeadFunctions" @click="v()">
+        <button v-for="(v, k) in tapeHeadFunctions" @click="runTapeHeadAction(v)">
             <span v-text="k"></span>
         </button>
     </actions>
     <p class="error-message" role="alert" v-if="tapeHeadVariables.error_message" v-text="tapeHeadVariables.error_message"></p>
-    <div v-for="(v, k) in tapeHeadVariables">
-        <div v-text="k"></div>
-        <div v-text="JSON.stringify(v)"></div>
+    <div class="transition-table-wrap">
+        <table class="transition-table">
+            <thead>
+                <tr>
+                    <th>状态</th>
+                    <th>条件 / 读入</th>
+                    <th>写入</th>
+                    <th>移动</th>
+                    <th>下一状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="row in transitionRows" :class="{ 'is-active': row.active }">
+                    <td v-text="row.state"></td>
+                    <td v-text="row.condition"></td>
+                    <td v-text="row.write"></td>
+                    <td v-text="row.move"></td>
+                    <td v-text="row.next"></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </tape-head>
 </main>

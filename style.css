@@ -252,6 +252,68 @@ tape-head > div:hover > div:last-child {
   color: #ffffff;
 }
 
+tape-head .transition-table-wrap {
+  display: block;
+  margin-bottom: 0;
+  padding: 0;
+  overflow-x: auto;
+  border: 1px solid rgba(61, 214, 184, 0.2);
+  border-radius: 12px;
+  background: rgba(8, 18, 29, 0.42);
+  transition: none;
+}
+
+tape-head > .transition-table-wrap:hover {
+  transform: none;
+  border-color: rgba(61, 214, 184, 0.2);
+  background: rgba(8, 18, 29, 0.42);
+}
+
+.transition-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.78rem;
+}
+
+.transition-table th,
+.transition-table td {
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  white-space: nowrap;
+}
+
+.transition-table th {
+  color: #83dfd0;
+  background: rgba(61, 214, 184, 0.08);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.transition-table td {
+  color: #d2e9e6;
+}
+
+.transition-table td:first-child {
+  color: #b8fff0;
+  font-weight: 700;
+}
+
+.transition-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.transition-table tbody tr.is-active {
+  background: rgba(61, 214, 184, 0.18);
+  box-shadow: inset 3px 0 #3dd6b8;
+}
+
+.transition-table tbody tr.is-active td {
+  color: #ffffff;
+}
+
 tape-head::-webkit-scrollbar-thumb {
   background: rgba(61, 214, 184, 0.35);
 }
