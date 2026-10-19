@@ -15,7 +15,7 @@ function defineScope(variables) {
             for (const k in methods) {
                 const m = methods[k];
                 const expose = m.expose;
-                if (expose) ret[k] = m.method;
+                if (expose) ret[k] = () => m.method.call(variables);
 
             }
             return ret;
@@ -43,6 +43,7 @@ const cursor = new Proxy({}, {
 });
 
 function next() {
+    console.log('next', this.position)
     if (this.replace_task === null) {
         const [x, y] = this.enum_status[this.status_offset].split(':');
         if (x == this.position) {
